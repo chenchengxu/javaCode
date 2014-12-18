@@ -1,0 +1,36 @@
+	private String send(String operName, String[] params, Object[] values) {
+		try {
+			String endpoint = "http://10.0.0.202:9000/YihuIvr/services/OutgoingCallService";
+			Service service = new Service(); // 创建一个Service实例
+			Call call = (Call) service.createCall();// 创建Call实例
+			call.setMaintainSession(true);
+			call.setTargetEndpointAddress(new java.net.URL(endpoint));// 为Call设置服务的位置
+			call.setOperationName(operName);
+			if (params != null && values != null
+					&& params.length != values.length)
+				throw new Exception("参数和参数值不匹配");
+			for (int i = 0; i < values.length; i++) {
+				if (values[i] instanceof Integer) {
+					call.addParameter(params[i], XMLType.XSD_INT,
+							ParameterMode.IN);
+				} else if (values[i] instanceof Boolean) {
+					call.addParameter(params[i], XMLType.XSD_BOOLEAN,
+							ParameterMode.IN);
+				} else {
+					call.addParameter(params[i], XMLType.XSD_STRING,
+							ParameterMode.IN);
+				}
+			}
+			call.setReturnType(XMLType.XSD_STRING);
+			call.setUseSOAPAction(true);
+			// call.setEncodingStyle("http://schemas.xmlsoap.org/soap/encoding/");
+			call.setEncodingStyle("utf-8");
+			// System.out.println(call.getSOAPActionURI()+" "+call.getOperationName()+" ");
+			String res = (String) call.invoke(values);
+			System.out.println(res);
+			return res;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
+	}
